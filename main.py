@@ -2,7 +2,7 @@ import sys
 from PyQt6.QtWidgets import (
     QApplication, QWidget, QVBoxLayout, QPushButton, QLabel, QTextEdit, QComboBox, QMessageBox, QFileDialog
 )
-from PyQt6.QtGui import QFont, QPageLayout, QTextDocument
+from PyQt6.QtGui import QFont, QTextDocument  # Füge QTextDocument hier hinzu
 from PyQt6.QtCore import QTimer
 from PyQt6.QtPrintSupport import QPrinter, QPrintDialog, QPrintPreviewDialog
 from utils import get_installed_models, generate_ollama_prompt
@@ -17,12 +17,48 @@ class App(QWidget):
         self.setWindowTitle('2024 / Ollama-Chatbot 1.0 | by Der Zerfleischer on ')
         self.setFixedSize(800, 600)
 
+        # Globales Stylesheet für alle Widgets
+        self.setStyleSheet("""
+            QWidget {
+                font-size: 14px;
+            }
+            QPushButton {
+                background-color: #204221;
+                color: white;
+                border: none;
+                padding: 8px 16px;
+                text-align: center;
+                text-decoration: none;
+                display: inline-block;
+                font-size: 14px;
+                margin: 4px 2px;
+                cursor: pointer;
+                border-radius: 4px;
+            }
+            QPushButton:hover {
+                background-color: #377739;
+            }
+            QComboBox {
+                background-color: #750e1a;
+                font-size: 14px;
+                padding: 5px;
+            }
+            QTextEdit {
+                font-size: 14px;
+                padding: 5px;
+            }
+            QLabel {
+                font-size: 14px;
+                margin-bottom: 5px;
+            }
+        """)
+
         layout = QVBoxLayout()
 
         self.model_label = QLabel('Ollama Modelle / Ollama models:')
         layout.addWidget(self.model_label)
 
-        self.model_combo = QComboBox()#
+        self.model_combo = QComboBox()
         self.model_combo.setMinimumHeight(25)
         self.load_models()
         layout.addWidget(self.model_combo)
@@ -100,7 +136,7 @@ class App(QWidget):
         dialog = QPrintDialog()
         if dialog.exec():
             printer = dialog.printer()
-            document = QTextDocument()
+            document = QTextDocument()  # Hier sollte jetzt kein NameError mehr auftreten
             document.setPlainText(self.generated_text_edit.toPlainText())
             document.print(printer)
 
@@ -111,7 +147,7 @@ class App(QWidget):
             printer.setOutputFormat(QPrinter.OutputFormat.PdfFormat)
             printer.setOutputFileName(file_path)
 
-            document = QTextDocument()
+            document = QTextDocument()  # Hier sollte jetzt auch kein NameError mehr auftreten
             document.setPlainText(self.generated_text_edit.toPlainText())
             document.print(printer)
 
@@ -122,6 +158,7 @@ class App(QWidget):
 
     def reset_clipboard_button_color(self):
         self.copy_to_clipboard_button.setStyleSheet("")
+
 
 if __name__ == '__main__':
     app = QApplication(sys.argv)

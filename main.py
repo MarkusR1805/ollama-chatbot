@@ -22,7 +22,7 @@ class App(QWidget):
         self.model_label = QLabel('Ollama Modelle / Ollama models:')
         layout.addWidget(self.model_label)
 
-        self.model_combo = QComboBox()
+        self.model_combo = QComboBox()#
         self.model_combo.setMinimumHeight(25)
         self.load_models()
         layout.addWidget(self.model_combo)

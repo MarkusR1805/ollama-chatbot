@@ -2,7 +2,7 @@ import sys
 from PyQt6.QtWidgets import (
     QApplication, QWidget, QVBoxLayout, QPushButton, QLabel, QTextEdit, QComboBox, QMessageBox, QFileDialog
 )
-from PyQt6.QtGui import QFont, QTextDocument  # Füge QTextDocument hier hinzu
+from PyQt6.QtGui import QFont, QTextDocument
 from PyQt6.QtCore import QTimer
 from PyQt6.QtPrintSupport import QPrinter, QPrintDialog, QPrintPreviewDialog
 from utils import get_installed_models, generate_ollama_prompt
@@ -12,43 +12,44 @@ class App(QWidget):
     def __init__(self):
         super().__init__()
         self.initUI()
+        self.dialog_context = []  # Speichert den gesamten Dialogkontext
+        self.current_interaction = []  # Speichert nur die aktuelle Interaktion
 
     def initUI(self):
-        self.setWindowTitle('2024 / Ollama-Chatbot 1.0 | by Der Zerfleischer on ')
-        self.setFixedSize(800, 600)
+        self.setWindowTitle('2024 / Ollama-Chatbot 1.5 | by Der Zerfleischer on ')
+        self.setFixedSize(1000, 850)
 
         # Globales Stylesheet für alle Widgets
         self.setStyleSheet("""
             QWidget {
-                font-size: 14px;
+                font-size: 12px;
             }
             QPushButton {
-                background-color: #204221;
+                background-color: #4CAF50;
                 color: white;
                 border: none;
                 padding: 8px 16px;
                 text-align: center;
                 text-decoration: none;
                 display: inline-block;
-                font-size: 14px;
+                font-size: 12px;
                 margin: 4px 2px;
                 cursor: pointer;
                 border-radius: 4px;
             }
             QPushButton:hover {
-                background-color: #377739;
+                background-color: #45a049;
             }
             QComboBox {
-                background-color: #750e1a;
-                font-size: 14px;
+                font-size: 12px;
                 padding: 5px;
             }
             QTextEdit {
-                font-size: 14px;
+                font-size: 12px;
                 padding: 5px;
             }
             QLabel {
-                font-size: 14px;
+                font-size: 12px;
                 margin-bottom: 5px;
             }
         """)
@@ -74,11 +75,11 @@ class App(QWidget):
         self.generate_button.clicked.connect(self.generate_text)
         layout.addWidget(self.generate_button)
 
-        self.generated_text_label = QLabel('Generierter Prompt / Generated prompt:')
+        self.generated_text_label = QLabel('Aktuelle Antwort / Current response:')
         layout.addWidget(self.generated_text_label)
 
         self.generated_text_edit = QTextEdit()
-        self.generated_text_edit.setMinimumSize(0, 70)
+        self.generated_text_edit.setMinimumSize(0, 300)
         layout.addWidget(self.generated_text_edit)
 
         self.copy_to_clipboard_button = QPushButton('In Zwischenablage kopieren / Copy to clipboard')
@@ -93,6 +94,11 @@ class App(QWidget):
         self.save_pdf_button = QPushButton('Als PDF speichern / Save as PDF')
         self.save_pdf_button.clicked.connect(self.save_as_pdf)
         layout.addWidget(self.save_pdf_button)
+
+        # Neuer Button zum Zurücksetzen der Konversation
+        self.reset_conversation_button = QPushButton('Neues Gespräch / New conversation')
+        self.reset_conversation_button.clicked.connect(self.reset_conversation)
+        layout.addWidget(self.reset_conversation_button)
 
         self.setLayout(layout)
 
@@ -114,10 +120,22 @@ class App(QWidget):
             QMessageBox.warning(self, 'Fehler', 'Die Anweisung darf nicht leer sein.\nThe instruction must not be empty')
             return
 
-        generated_text = generate_ollama_prompt(anweisung, '', selected_model)
+        # Erstellen eines kontextbehafteten Prompts
+        context = "\n".join(self.dialog_context) if self.dialog_context else ""
+        prompt = f"{context}\nBenutzer: {anweisung}\nAI:"
+
+        generated_text = generate_ollama_prompt(prompt, '', selected_model)
 
         if generated_text:
-            self.generated_text_edit.setPlainText(generated_text)
+            # Füge die neue Interaktion zum Dialogkontext hinzu
+            self.dialog_context.append(f"Benutzer: {anweisung}")
+            self.dialog_context.append(f"AI: {generated_text}")
+
+            # Aktualisiere die aktuelle Interaktion
+            self.current_interaction = [f"Benutzer: {anweisung}", f"AI: {generated_text}"]
+
+            # Zeige nur die aktuelle Interaktion im UI an
+            self.generated_text_edit.setPlainText("\n".join(self.current_interaction))
         else:
             QMessageBox.critical(self, 'Fehler', 'Fehler bei der Generierung des Textes!')
 
@@ -136,7 +154,7 @@ class App(QWidget):
         dialog = QPrintDialog()
         if dialog.exec():
             printer = dialog.printer()
-            document = QTextDocument()  # Hier sollte jetzt kein NameError mehr auftreten
+            document = QTextDocument()
             document.setPlainText(self.generated_text_edit.toPlainText())
             document.print(printer)
 
@@ -147,7 +165,7 @@ class App(QWidget):
             printer.setOutputFormat(QPrinter.OutputFormat.PdfFormat)
             printer.setOutputFileName(file_path)
 
-            document = QTextDocument()  # Hier sollte jetzt auch kein NameError mehr auftreten
+            document = QTextDocument()
             document.setPlainText(self.generated_text_edit.toPlainText())
             document.print(printer)
 
@@ -159,6 +177,12 @@ class App(QWidget):
     def reset_clipboard_button_color(self):
         self.copy_to_clipboard_button.setStyleSheet("")
 
+    def reset_conversation(self):
+        """Setzt die Konversation zurück und leert die Historie."""
+        self.dialog_context = []
+        self.current_interaction = []
+        self.generated_text_edit.clear()
+        self.anweisung_input.clear()  # Optional: Auch das Eingabefeld leeren
 
 if __name__ == '__main__':
     app = QApplication(sys.argv)

@@ -1,20 +1,18 @@
 import sys
-from PyQt6.QtWidgets import QApplication, QWidget, QVBoxLayout, QPushButton, QLabel, QTextEdit, QComboBox, QMessageBox
-from PyQt6.QtGui import QClipboard, QFont
+from PyQt6.QtWidgets import (
+    QApplication, QWidget, QVBoxLayout, QPushButton, QLabel, QTextEdit, QComboBox, QMessageBox, QFileDialog
+)
+from PyQt6.QtGui import QFont, QPageLayout, QTextDocument
 from PyQt6.QtCore import QTimer
+from PyQt6.QtPrintSupport import QPrinter, QPrintDialog, QPrintPreviewDialog
 from utils import get_installed_models, generate_ollama_prompt
+
 
 class App(QWidget):
     def __init__(self):
         super().__init__()
         self.initUI()
 
-        # Schriftart und -größe festlegen
-        ''' font = QFont()
-        font.setPointSize(16)
-        self.setFont(font) '''
-
-    # ANCHOR Titel
     def initUI(self):
         self.setWindowTitle('2024 / Ollama-Chatbot 1.0 | by Der Zerfleischer on ')
         self.setFixedSize(800, 600)
@@ -33,23 +31,32 @@ class App(QWidget):
         layout.addWidget(self.anweisung_label)
 
         self.anweisung_input = QTextEdit()
-        self.anweisung_input.setMaximumHeight(70)
+        self.anweisung_input.setMaximumHeight(90)
         layout.addWidget(self.anweisung_input)
 
         self.generate_button = QPushButton('Generieren / Generate')
         self.generate_button.clicked.connect(self.generate_text)
         layout.addWidget(self.generate_button)
 
-        self.generated_text_label = QLabel('Generierter Prompt / Generate prompt:')
+        self.generated_text_label = QLabel('Generierter Prompt / Generated prompt:')
         layout.addWidget(self.generated_text_label)
 
         self.generated_text_edit = QTextEdit()
-        self.generated_text_edit.setMinimumSize(0,70)
+        self.generated_text_edit.setMinimumSize(0, 70)
         layout.addWidget(self.generated_text_edit)
 
         self.copy_to_clipboard_button = QPushButton('In Zwischenablage kopieren / Copy to clipboard')
         self.copy_to_clipboard_button.clicked.connect(self.copy_to_clipboard)
         layout.addWidget(self.copy_to_clipboard_button)
+
+        # Buttons für Drucken und PDF-Speichern
+        self.print_button = QPushButton('Drucken / Print')
+        self.print_button.clicked.connect(self.print_result)
+        layout.addWidget(self.print_button)
+
+        self.save_pdf_button = QPushButton('Als PDF speichern / Save as PDF')
+        self.save_pdf_button.clicked.connect(self.save_as_pdf)
+        layout.addWidget(self.save_pdf_button)
 
         self.setLayout(layout)
 
@@ -76,7 +83,7 @@ class App(QWidget):
         if generated_text:
             self.generated_text_edit.setPlainText(generated_text)
         else:
-           QMessageBox.critical(self, 'Fehler', 'Fehler bei der Generierung des Textes!')
+            QMessageBox.critical(self, 'Fehler', 'Fehler bei der Generierung des Textes!')
 
     def copy_to_clipboard(self):
         self.copy_to_clipboard_button.setStyleSheet("background-color: green")
@@ -88,6 +95,27 @@ class App(QWidget):
             clipboard.setText(generated_text)
         else:
             QMessageBox.warning(self, 'Fehler', 'Es gibt keinen generierten Text, der in die Zwischenablage kopiert werden kann.\nThere is no generated text that can be copied to the clipboard.')
+
+    def print_result(self):
+        dialog = QPrintDialog()
+        if dialog.exec():
+            printer = dialog.printer()
+            document = QTextDocument()
+            document.setPlainText(self.generated_text_edit.toPlainText())
+            document.print(printer)
+
+    def save_as_pdf(self):
+        file_path, _ = QFileDialog.getSaveFileName(self, "Als PDF speichern", "", "PDF-Dateien (*.pdf)")
+        if file_path:
+            printer = QPrinter()
+            printer.setOutputFormat(QPrinter.OutputFormat.PdfFormat)
+            printer.setOutputFileName(file_path)
+
+            document = QTextDocument()
+            document.setPlainText(self.generated_text_edit.toPlainText())
+            document.print(printer)
+
+            QMessageBox.information(self, "Erfolg", "Die Datei wurde erfolgreich gespeichert!")
 
     def reset_generate_button_color(self):
         self.generate_button.setStyleSheet("")

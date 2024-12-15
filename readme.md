@@ -2,6 +2,9 @@
 
 Install
 
+Install Git
+https://git-scm.com
+
 Install Python for Mac
 https://www.python.org/ftp/python/3.12.8/python-3.12.8-macos11.pkg
 

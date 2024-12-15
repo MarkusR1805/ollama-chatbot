@@ -1,5 +1,5 @@
 # Ollama-ChatBot with Ollama LLM-Models
-## You need an internet connection to use this programme. Without an internet connection you will receive an error message!
+## You need an internet connection to use this App. Without an internet connection you will receive an error message!
 
 Install
 

@@ -2,10 +2,11 @@ import sys
 from PyQt6.QtWidgets import (
     QApplication, QWidget, QVBoxLayout, QPushButton, QLabel, QTextEdit, QComboBox, QMessageBox, QFileDialog
 )
-from PyQt6.QtGui import QFont, QTextDocument
+from PyQt6.QtGui import QTextDocument
 from PyQt6.QtCore import QTimer
-from PyQt6.QtPrintSupport import QPrinter, QPrintDialog, QPrintPreviewDialog
-from utils import get_installed_models, generate_ollama_prompt
+from PyQt6.QtPrintSupport import QPrinter, QPrintDialog
+from deep_translator import GoogleTranslator  # Neue Übersetzungsbibliothek
+from utils import get_installed_models, generate_ollama_prompt  # Eigene Hilfsfunktionen
 
 
 class App(QWidget):
@@ -17,7 +18,7 @@ class App(QWidget):
 
     def initUI(self):
         self.setWindowTitle('2024 / Ollama-Chatbot 1.5 | by Der Zerfleischer on ')
-        self.setFixedSize(1000, 850)
+        self.setFixedSize(1000, 920)
 
         # Globales Stylesheet für alle Widgets
         self.setStyleSheet("""
@@ -65,6 +66,7 @@ class App(QWidget):
 
         layout = QVBoxLayout()
 
+        # Modell-Auswahl
         self.model_label = QLabel('Ollama Modelle / Ollama models:')
         layout.addWidget(self.model_label)
 
@@ -73,6 +75,22 @@ class App(QWidget):
         self.load_models()
         layout.addWidget(self.model_combo)
 
+        # Sprachauswahl
+        self.language_label = QLabel('Sprache auswählen / Select Language:')
+        layout.addWidget(self.language_label)
+
+        self.language_combo = QComboBox()
+        self.language_combo.addItems([
+            'Deutsch',  # de
+            'Englisch',  # en
+            'Französisch',  # fr
+            'Spanisch',  # es
+            'Italienisch',  # it
+            'Lateinisch'  # la
+        ])
+        layout.addWidget(self.language_combo)
+
+        # Eingabe-Anweisung
         self.anweisung_label = QLabel('Anweisung / Instruction:')
         layout.addWidget(self.anweisung_label)
 
@@ -80,10 +98,12 @@ class App(QWidget):
         self.anweisung_input.setMaximumHeight(90)
         layout.addWidget(self.anweisung_input)
 
+        # Generate Button
         self.generate_button = QPushButton('Generieren / Generate')
         self.generate_button.clicked.connect(self.generate_text)
         layout.addWidget(self.generate_button)
 
+        # Generierte Antwort
         self.generated_text_label = QLabel('Aktuelle Antwort / Current response:')
         layout.addWidget(self.generated_text_label)
 
@@ -91,11 +111,12 @@ class App(QWidget):
         self.generated_text_edit.setMinimumSize(0, 300)
         layout.addWidget(self.generated_text_edit)
 
+        # Copy to clipboard Button
         self.copy_to_clipboard_button = QPushButton('In Zwischenablage kopieren / Copy to clipboard')
         self.copy_to_clipboard_button.clicked.connect(self.copy_to_clipboard)
         layout.addWidget(self.copy_to_clipboard_button)
 
-        # Buttons für Drucken und PDF-Speichern
+        # Drucken und PDF speichern
         self.print_button = QPushButton('Drucken / Print')
         self.print_button.clicked.connect(self.print_result)
         layout.addWidget(self.print_button)
@@ -104,7 +125,7 @@ class App(QWidget):
         self.save_pdf_button.clicked.connect(self.save_as_pdf)
         layout.addWidget(self.save_pdf_button)
 
-        # Neuer Button zum Zurücksetzen der Konversation
+        # Konversation zurücksetzen
         self.reset_conversation_button = QPushButton('Neues Gespräch / New conversation')
         self.reset_conversation_button.clicked.connect(self.reset_conversation)
         layout.addWidget(self.reset_conversation_button)
@@ -123,27 +144,48 @@ class App(QWidget):
         QTimer.singleShot(100, self.reset_generate_button_color)
 
         selected_model = self.model_combo.currentText().split(': ')[1]
+        selected_language = self.language_combo.currentText()  # Sprache auswählen
         anweisung = self.anweisung_input.toPlainText().strip()
 
         if not anweisung:
             QMessageBox.warning(self, 'Fehler', 'Die Anweisung darf nicht leer sein.\nThe instruction must not be empty')
             return
 
-        # Erstellen eines kontextbehafteten Prompts
-        context = "\n".join(self.dialog_context) if self.dialog_context else ""
-        prompt = f"{context}\nBenutzer: {anweisung}\nAI:"
+        # Sprachhinweis hinzufügen und Übersetzungslogik je nach Sprache
+        language_map = {
+            'Deutsch': 'de',
+            'Englisch': 'en',
+            'Französisch': 'fr',
+            'Spanisch': 'es',
+            'Italienisch': 'it',
+            'Lateinisch': 'la'
+        }
+        target_language = language_map.get(selected_language, 'en')  # Standard: Englisch
 
+        # Übersetze Benutzeranweisung in die gewünschte Sprache
+        try:
+            anweisung = GoogleTranslator(source='auto', target=target_language).translate(anweisung)
+        except Exception as e:
+            QMessageBox.critical(self, 'Übersetzungsfehler', f'Fehler bei der Übersetzung: {str(e)}')
+            return
+
+        # Kontext erstellen
+        context = "\n".join(self.dialog_context) if self.dialog_context else ""
+        prompt = f"{context}\nBitte antworte in {selected_language}.\nBenutzer: {anweisung}\nAI:"
+
+        # Text generieren
         generated_text = generate_ollama_prompt(prompt, '', selected_model)
 
         if generated_text:
-            # Füge die neue Interaktion zum Dialogkontext hinzu
+            # Übersetze die Antwort zurück in die gewünschte Sprache (falls nötig)
+            try:
+                generated_text = GoogleTranslator(source='auto', target=target_language).translate(generated_text)
+            except Exception as e:
+                QMessageBox.critical(self, 'Übersetzungsfehler', f'Fehler bei der Übersetzung: {str(e)}')
+
             self.dialog_context.append(f"Benutzer: {anweisung}")
             self.dialog_context.append(f"AI: {generated_text}")
-
-            # Aktualisiere die aktuelle Interaktion
             self.current_interaction = [f"Benutzer: {anweisung}", f"AI: {generated_text}"]
-
-            # Zeige nur die aktuelle Interaktion im UI an
             self.generated_text_edit.setPlainText("\n".join(self.current_interaction))
         else:
             QMessageBox.critical(self, 'Fehler', 'Fehler bei der Generierung des Textes!')
@@ -156,6 +198,7 @@ class App(QWidget):
         if generated_text:
             clipboard = QApplication.clipboard()
             clipboard.setText(generated_text)
+            QMessageBox.information(self, "Erfolg", "Der Text wurde in die Zwischenablage kopiert!")
         else:
             QMessageBox.warning(self, 'Fehler', 'Es gibt keinen generierten Text, der in die Zwischenablage kopiert werden kann.\nThere is no generated text that can be copied to the clipboard.')
 
@@ -191,7 +234,8 @@ class App(QWidget):
         self.dialog_context = []
         self.current_interaction = []
         self.generated_text_edit.clear()
-        self.anweisung_input.clear()  # Optional: Auch das Eingabefeld leeren
+        self.anweisung_input.clear()
+        QMessageBox.information(self, "Gespräch zurückgesetzt", "Das Gespräch wurde erfolgreich zurückgesetzt.")
 
 if __name__ == '__main__':
     app = QApplication(sys.argv)

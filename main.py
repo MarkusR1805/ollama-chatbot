@@ -22,34 +22,40 @@ class App(QWidget):
         # Globales Stylesheet für alle Widgets
         self.setStyleSheet("""
             QWidget {
-                font-size: 12px;
+                font-size: 16px;
             }
             QPushButton {
-                background-color: #4CAF50;
-                color: white;
+                background-color:rgb(31, 84, 30);
+                color: rgb(215, 215, 215);
                 border: none;
                 padding: 8px 16px;
                 text-align: center;
                 text-decoration: none;
                 display: inline-block;
-                font-size: 12px;
+                font-size: 16px;
                 margin: 4px 2px;
                 cursor: pointer;
-                border-radius: 4px;
+                border-radius: 15px;
             }
             QPushButton:hover {
-                background-color: #45a049;
+                background-color:rgb(115, 115, 115);
+                font-size: 16px;
+                color: rgb(215, 215, 215);
             }
             QComboBox {
-                font-size: 12px;
+                font-size: 16px;
+                background-color:rgb(61, 0, 0);
+                color: rgb(215, 215, 215);
                 padding: 5px;
             }
             QTextEdit {
-                font-size: 12px;
+                font-size: 16px;
+                color: rgb(215, 215, 215);
                 padding: 5px;
             }
             QLabel {
-                font-size: 12px;
+                font-size: 16px;
+                color: rgb(215, 215, 215);
                 margin-bottom: 5px;
             }
         """)

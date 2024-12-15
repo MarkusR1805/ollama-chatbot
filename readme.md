@@ -14,9 +14,9 @@ Install my App
 git clone https://github.com/MarkusR1805/ollama-chatbot.git
 ```
 
-Create an Python VENV
+Create an Python VENV (on my system mac pro m3 max)
 ```
-python -m venv ollama-chatbot
+python3.12 -m venv ollama-chatbot
 cd ollama-chatbot
 source bin/activate
 pip3 install --upgrade pip

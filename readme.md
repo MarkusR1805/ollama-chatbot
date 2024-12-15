@@ -18,8 +18,9 @@ Create an Python VENV
 ```
 python -m venv ollama-chatbot
 cd ollama-chatbot
-pip install --upgrade pip
-pip install -r requirements.txt
+source bin/activate
+pip3 install --upgrade pip
+pip3 install -r requirements.txt
 python main.py
 ```
 

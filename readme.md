@@ -13,3 +13,9 @@ Install my App
 ```sh
 git clone https://github.com/MarkusR1805/ollama-chatbot.git
 ```
+
+Create an Python VENV
+```
+python -m venv ollama-chatbot
+cd ollama-chatbot
+```

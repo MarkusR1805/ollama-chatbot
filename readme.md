@@ -22,8 +22,8 @@ Create an Python VENV (on my system mac pro m3 max)
 python3.12 -m venv ollama-chatbot
 cd ollama-chatbot
 source bin/activate
-pip3 install --upgrade pip
-pip3 install -r requirements.txt
+pip install --upgrade pip
+pip install -r requirements.txt
 python main.py
 ```
 

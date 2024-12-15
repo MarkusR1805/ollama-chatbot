@@ -46,15 +46,15 @@ class App(QWidget):
                 font-size: 16px;
                 background-color:rgb(61, 0, 0);
                 color: rgb(215, 215, 215);
-                padding: 5px;
+                border: 1px solid rgb(31, 84, 30);
             }
             QTextEdit {
                 font-size: 16px;
                 color: rgb(215, 215, 215);
                 padding: 5px;
                 border: 2px solid rgb(31, 84, 30);
-                border-radius: 15px;
-                background-color: rgb(30, 30, 30);
+                border-radius: 10px;
+                background-color: rgb(33, 33, 33);
             }
             QLabel {
                 font-size: 16px;

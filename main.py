@@ -18,7 +18,7 @@ class App(QWidget):
 
     def initUI(self):
         self.setWindowTitle('2024 / Ollama-Chatbot 2.0 | by Der Zerfleischer on ')
-        self.setFixedSize(1000, 915)
+        self.setFixedSize(700, 915)
 
         # Globales Stylesheet für alle Widgets
         self.setStyleSheet("""

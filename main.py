@@ -16,7 +16,7 @@ class App(QWidget):
         self.current_interaction = []  # Speichert nur die aktuelle Interaktion
 
     def initUI(self):
-        self.setWindowTitle('2024 / Ollama-Chatbot 2.0 | by Der Zerfleischer on ')
+        self.setWindowTitle('2024 / Ollama-Chatbot 2.1 | by Der Zerfleischer on ')
         self.setFixedSize(800, 915)
 
         # Globales Stylesheet für alle Widgets

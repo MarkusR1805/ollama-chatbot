@@ -2,12 +2,11 @@ import sys
 from PyQt6.QtWidgets import (
     QApplication, QWidget, QVBoxLayout, QPushButton, QLabel, QTextEdit, QComboBox, QMessageBox, QFileDialog
 )
-from PyQt6.QtGui import QTextDocument
-from PyQt6.QtCore import QTimer
+from PyQt6.QtGui import QTextDocument, QKeySequence
+from PyQt6.QtCore import QTimer, Qt, QEvent
 from PyQt6.QtPrintSupport import QPrinter, QPrintDialog
 from deep_translator import GoogleTranslator  # Neue Übersetzungsbibliothek
 from utils import get_installed_models, generate_ollama_prompt  # Eigene Hilfsfunktionen
-
 
 class App(QWidget):
     def __init__(self):
@@ -96,6 +95,7 @@ class App(QWidget):
 
         self.anweisung_input = QTextEdit()
         self.anweisung_input.setMaximumHeight(90)
+        self.anweisung_input.installEventFilter(self)
         layout.addWidget(self.anweisung_input)
 
         # Generate Button
@@ -138,6 +138,13 @@ class App(QWidget):
             self.model_combo.addItems([f"Modell {k}: {v}" for k, v in models.items()])
         else:
             QMessageBox.critical(self, 'Fehler', 'Es sind keine Modelle installiert. Installiere bitte mindestens ein Modell.\nNo models are installed. Please install at least one model.')
+
+    def eventFilter(self, source, event):
+        if source == self.anweisung_input and event.type() == QEvent.Type.KeyPress:
+            if event.key() == Qt.Key.Key_Return and event.modifiers() == Qt.KeyboardModifier.ControlModifier:
+                self.generate_text()
+                return True
+        return super().eventFilter(source, event)
 
     def generate_text(self):
         self.generate_button.setStyleSheet("background-color: green")

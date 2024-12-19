@@ -17,12 +17,12 @@ class App(QWidget):
 
     def initUI(self):
         self.setWindowTitle('2024 / Ollama-Chatbot 2.1 | by Der Zerfleischer on ')
-        self.setFixedSize(800, 915)
+        self.setFixedSize(800, 890)
 
         # Globales Stylesheet für alle Widgets
         self.setStyleSheet("""
             QWidget {
-                font-size: 16px;
+                font-size: 14px;
             }
             QPushButton {
                 background-color:rgb(31, 84, 30);
@@ -32,24 +32,24 @@ class App(QWidget):
                 text-align: center;
                 text-decoration: none;
                 display: inline-block;
-                font-size: 16px;
+                font-size: 14px;
                 margin: 4px 2px;
                 cursor: pointer;
                 border-radius: 15px;
             }
             QPushButton:hover {
                 background-color:rgb(115, 115, 115);
-                font-size: 16px;
+                font-size: 14px;
                 color: rgb(215, 215, 215);
             }
             QComboBox {
-                font-size: 16px;
+                font-size: 14px;
                 background-color:rgb(61, 0, 0);
                 color: rgb(215, 215, 215);
                 border: 1px solid rgb(31, 84, 30);
             }
             QTextEdit {
-                font-size: 16px;
+                font-size: 14px;
                 color: rgb(215, 215, 215);
                 padding: 5px;
                 border: 2px solid rgb(31, 84, 30);
@@ -57,7 +57,7 @@ class App(QWidget):
                 background-color: rgb(33, 33, 33);
             }
             QLabel {
-                font-size: 16px;
+                font-size: 14px;
                 color: rgb(215, 215, 215);
                 margin-bottom: 5px;
             }

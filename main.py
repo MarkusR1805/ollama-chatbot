@@ -189,6 +189,11 @@ class App(QWidget):
                 generated_text = GoogleTranslator(source='auto', target=target_language).translate(generated_text)
             except Exception as e:
                 QMessageBox.critical(self, 'Übersetzungsfehler', f'Fehler bei der Übersetzung: {str(e)}')
+                return # Hinzugefügt: Beende die Funktion, wenn die Übersetzung fehlschlägt
+
+            # Entferne das führende Anführungszeichen, falls vorhanden
+            if generated_text.startswith('"'):
+                generated_text = generated_text[1:]
 
             self.dialog_context.append(f"Benutzer: {anweisung}")
             self.dialog_context.append(f"AI: {generated_text}")

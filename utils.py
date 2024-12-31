@@ -46,8 +46,10 @@ def generate_ollama_prompt(selected_anweisung, user_input, selected_model):
             generated_text = generated_text.strip()  # Entfernt führende und nachfolgende Leerzeichen
             if generated_text.endswith('\n.'):
                 generated_text = generated_text.replace('\n.', '').strip()  # Entfernt die Zeile mit dem Punkt am Ende (bei manchen LLM's ein häufiges Vorkommen)
+            # generated_text = re.sub(r'^\s*\"', '', generated_text)  # Anführungszeichen am Anfang entfernen, auch wenn es nach Leerzeichen steht
+            # generated_text = re.sub(r'\"$', '', generated_text) # Doppelte Anführungszeichen am Ende entfernen
             generated_text = re.sub(r'^\s*\"', '', generated_text)  # Anführungszeichen am Anfang entfernen, auch wenn es nach Leerzeichen steht
-            generated_text = re.sub(r'\"$', '', generated_text) # Doppelte Anführungszeichen am Ende entfernen
+            generated_text = re.sub(r'\"$', '', generated_text)  # Anführungszeichen am Ende entfernen
             return generated_text
     except Exception as e:
         logging.error(f"Fehler bei der Generierung des Textes: {e}")

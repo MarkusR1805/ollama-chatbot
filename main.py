@@ -192,8 +192,7 @@ class App(QWidget):
                 return # Hinzugefügt: Beende die Funktion, wenn die Übersetzung fehlschlägt
 
             # Entferne das führende Anführungszeichen, falls vorhanden
-            if generated_text.startswith('"'):
-                generated_text = generated_text[1:]
+            generated_text = generated_text.lstrip().replace('"', '', 1)
 
             self.dialog_context.append(f"Benutzer: {anweisung}")
             self.dialog_context.append(f"AI: {generated_text}")

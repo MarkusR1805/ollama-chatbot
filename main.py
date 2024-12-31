@@ -191,13 +191,17 @@ class App(QWidget):
                 QMessageBox.critical(self, 'Übersetzungsfehler', f'Fehler bei der Übersetzung: {str(e)}')
                 return # Hinzugefügt: Beende die Funktion, wenn die Übersetzung fehlschlägt
 
-            # Entferne das führende Anführungszeichen, falls vorhanden
-            generated_text = generated_text.lstrip().replace('"', '', 1)
-
             self.dialog_context.append(f"Benutzer: {anweisung}")
             self.dialog_context.append(f"AI: {generated_text}")
             self.current_interaction = [f"Benutzer: {anweisung}", f"AI: {generated_text}"]
-            self.generated_text_edit.setPlainText("\n".join(self.current_interaction))
+
+            # Set the text and *then* remove the leading quote if present
+            final_text = "\n".join(self.current_interaction)
+            if final_text.startswith('"'):
+                final_text = final_text[1:]
+
+            self.generated_text_edit.setPlainText(final_text)
+
         else:
             QMessageBox.critical(self, 'Fehler', 'Fehler bei der Generierung des Textes!')
 

@@ -32,3 +32,8 @@ Start the App
 ```
 python main.py
 ```
+
+## Ein Video zur Installation auf dem Mac und eine Erklärung zum Programm hier:
+[YouTube-Video](https://youtu.be/COPnfGR37LY)
+
+[![N|Solid](https://image.civitai.com/xG1nkqKTMzGDvpLrqFT7WA/baeb8e7f-9b20-4f36-915a-d2704296debf/original=true,quality=90/48505578.jpeg)](https://civitai.com/user/Der_Zerfleischer)

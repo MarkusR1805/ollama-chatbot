@@ -15,7 +15,7 @@ logging.basicConfig(
 def get_installed_models():
     try:
         result = subprocess.run(
-            ['ollama', 'list'],
+            ['/usr/local/bin/ollama', 'list'],
             stdout=subprocess.PIPE,
             stderr=subprocess.PIPE,
             text=True,

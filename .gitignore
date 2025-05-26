@@ -1,8 +1,2 @@
-/bin
-/include
-/lib
-__pycache__
-pyvenv.cfg
-.DS_Store
-.gitignore
-script.log
+# Created by venv; see https://docs.python.org/3/library/venv.html
+*
